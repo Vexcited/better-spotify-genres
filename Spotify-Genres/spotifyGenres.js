@@ -1,14 +1,12 @@
-// @ts-chec
+// @ts-check
 
 // NAME: Spotify Genres
-// AUTHOR: Tetrax-10
+// AUTHOR: Vexcited, originally made by Tetrax-10
 // DESCRIPTION: See what Genres you are listening to
 
 /* eslint-disable */
 
-/// <reference path="../dev/globals.d.ts" />
-
-;(async function spotifyGenres() {
+(async function spotifyGenres() {
     if (!(Spicetify.CosmosAsync && Spicetify.Platform && Spicetify.URI && Spicetify.Player.data)) {
         setTimeout(spotifyGenres, 300)
         return
@@ -642,16 +640,3 @@
         }
     }
 })()
-
-// Styles of .ellipsis-one-line and .main-type-finale in case lost.
-
-// .ellipsis-one-line {
-//     overflow: hidden;
-//     text-overflow: ellipsis;
-//     white-space: nowrap;
-// }
-// .main-type-finale {
-//     font-size: 0.6875rem;
-//     font-weight: 400;
-//     font-family: var(--font-family, CircularSp, CircularSp-Arab, CircularSp-Hebr, CircularSp-Cyrl, CircularSp-Grek, CircularSp-Deva, var(--fallback-fonts, sans-serif));
-// }
