@@ -1,7 +1,7 @@
 {
   "name": "better-spotify-genres",
-  "description": "Spotify Extensions Developed by a Music Lover",
-  "author": "Vexcited",
+  "description": "See what genres you are listening to.",
+  "author": "Mikkel RINGAUD (https://github.com/Vexcited) <mikkel@milescode.dev>",
   "license": "MIT",
   "homepage": "https://github.com/Vexcited/better-spotify-genres",
   "repository": {
@@ -12,8 +12,8 @@
     "url": "https://github.com/Vexcited/better-spotify-genres/issues"
   },
   "devDependencies": {
-    "@types/react": "^18.0.28",
-    "@types/react-dom": "^18.0.11",
-    "eslint": "^8.40.0"
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "eslint": "^8.55.0"
   }
 }

@@ -1,5 +1,1 @@
-dev
-.vscode
 node_modules
-dist
-*.txt

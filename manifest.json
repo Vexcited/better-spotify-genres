@@ -1,60 +1,7 @@
-[
-    {
-        "name": "Sort By Play Count",
-        "description": "Sorts Songs by Play Count, Global Scrobbles, Personal Scrobbles Using Last.FM",
-        "preview": "Sort-by-Play-count/preview.png",
-        "main": "Sort-by-Play-count/sortByPlayCount.js",
-        "readme": "Sort-by-Play-count/README.md"
-    },
-    {
-        "name": "Play on YouTube",
-        "description": "Plays the Video Song of a Track in YouTube",
-        "preview": "Play-on-YouTube/preview.png",
-        "main": "Play-on-YouTube/playOnYouTube.js",
-        "readme": "Play-on-YouTube/README.md",
-        "branch": "dist"
-    },
-    {
-        "name": "Image Opener",
-        "description": "Opens high res image of tracks, artists, playlists, profiles etc...",
-        "preview": "Image-Opener/preview.png",
-        "main": "Image-Opener/imageOpener.js",
-        "readme": "Image-Opener/README.md",
-        "branch": "dist"
-    },
-    {
-        "name": "Spotify Genres",
-        "description": "See what Genres you are listening to with Spotify Genres Extension",
-        "preview": "Spotify-Genres/preview.png",
-        "main": "Spotify-Genres/spotifyGenres.js",
-        "readme": "Spotify-Genres/README.md"
-    },
-    {
-        "name": "Spotify Backup",
-        "description": "Backup / Restore Playlist and Settings",
-        "preview": "Spotify-Backup/demo.gif",
-        "main": "Spotify-Backup/spotifyBackup.js",
-        "readme": "Spotify-Backup/README.md"
-    },
-    {
-        "name": "Seek Song",
-        "description": "This Extension Seeks Song when you press 1 to 9 for 10 % to 90 % of the song and left and right arrow Seeks backward and forward for 10 seconds",
-        "preview": "Seek-Song/screenshot.gif",
-        "main": "Seek-Song/seekSong.js",
-        "readme": "Seek-Song/README.md"
-    },
-    {
-        "name": "Play Enhanced Songs",
-        "description": "Plays only the Enhanced Songs from a playlist, even other's playlist",
-        "preview": "Play-Enhanced-Songs/preview.png",
-        "main": "Play-Enhanced-Songs/playEnhancedSongs.js",
-        "readme": "Play-Enhanced-Songs/README.md"
-    },
-    {
-        "name": "Skip or Play Liked Songs",
-        "description": "This Extension Skips or Plays Liked Songs only",
-        "preview": "Skip-or-Play-Liked-Songs/preview.png",
-        "main": "Skip-or-Play-Liked-Songs/skipOrPlayLikedSongs.js",
-        "readme": "Skip-or-Play-Liked-Songs/README.md"
-    }
-]
+{
+  "name": "Spotify Genres",
+  "description": "See what genres you are listening to.",
+  "preview": ".github/preview.png",
+  "main": "src/spotifyGenres.js",
+  "readme": "README.md"
+}
