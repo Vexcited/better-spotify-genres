@@ -8,13 +8,13 @@ See what genres you are listening to with this [Spicetify](https://spicetify.app
 
 Right click on a genre in the player bar.
 
-![popup](./.github/popup.png)
+![Pop-up](https://raw.githubusercontent.com/Vexcited/better-spotify-genres/main/.github/popup.png)
 
 ### Toggle
 
 You can easily toggle the widget by clicking on the icon in the player bar.
 
-![Widget](./.github/widget-demo.gif)
+![Widget](https://raw.githubusercontent.com/Vexcited/better-spotify-genres/main/.github/widget-demo.gif)
 
 ## Install Manually
 
