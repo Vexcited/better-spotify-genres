@@ -43,5 +43,5 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add .
-          git commit -m "Upload new bundle"
+          git commit -m "ci: upload new bundle"
           git push
