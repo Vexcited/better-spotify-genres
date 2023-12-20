@@ -1,10 +1,10 @@
 {
-  "name": "Spotify Genres",
+  "name": "Better Spotify Genres",
   "description": "See what genres you are listening to.",
-  "preview": ".github/preview.png",
-  "main": "src/spotifyGenres.js",
+  "preview": "assets/preview.png",
+  "main": "spotifyGenres.js",
   "readme": "README.md",
-  "branch": "master",
+  "branch": "build",
   "authors": [
     { "name": "Vexcited", "url": "https://github.com/Vexcited" },
     { "name": "Tetrax-10", "url": "https://github.com/Tetrax-10" }

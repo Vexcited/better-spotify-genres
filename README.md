@@ -18,7 +18,7 @@ You can easily toggle the widget by clicking on the icon in the player bar.
 
 ## Install Manually
 
-Copy `spotifyGenres.js` into your [Spicetify](https://github.com/spicetify/spicetify-cli) extensions directory:
+Copy [`spotifyGenres.js`](https://raw.githubusercontent.com/Vexcited/better-spotify-genres/build/spotifyGenres.js) from the `build` branch into your [Spicetify](https://github.com/spicetify/spicetify-cli) extensions directory:
 
 | **Platform** | **Path**                                                                             |
 | ------------ | ------------------------------------------------------------------------------------ |
