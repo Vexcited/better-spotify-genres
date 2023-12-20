@@ -45,3 +45,6 @@ jobs:
           git add .
           git commit -m "ci: upload new bundle"
           git push
+
+      - name: Purge jsDelivr cache
+        run: curl https://purge.jsdelivr.net/gh/Vexcited/better-spotify-genres@build/spotifyGenres.js
