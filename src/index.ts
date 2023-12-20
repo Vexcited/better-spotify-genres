@@ -485,9 +485,6 @@ function initializeSpotifyGenres(): void {
       content: settingsDOMContent as unknown as Element,
       isLarge: true
     });
-
-    // const headerSection = document.querySelector(".main-trackCreditsModal-header")
-    // headerSection?.prepend(container)
   }
 
   let infoContainer: HTMLDivElement | null = null;
