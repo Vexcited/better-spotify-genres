@@ -1,7 +1,3 @@
-// NAME: Better Spotify Genres
-// AUTHOR: Vexcited, originally made by Tetrax-10
-// DESCRIPTION: See what genres you are listening to.
-
 import { fetchArtistGenres } from "./api/artistGenres";
 import { fetchDataFromLastFM } from "./api/lastFM";
 import camelize from "./utils/camelize";
@@ -10,10 +6,10 @@ import type * as ReactTypes from "react";
 import type { CustomWindow } from "./window";
 declare let window: CustomWindow;
 
-(async function spotifyGenres() {
+function initializeSpotifyGenres(): void {
   // Make sure everything is loaded.
   if (!(Spicetify.CosmosAsync && Spicetify.Platform && Spicetify.URI && Spicetify.Player.data)) {
-    setTimeout(spotifyGenres, 300)
+    setTimeout(initializeSpotifyGenres, 300);
     return;
   }
 
@@ -579,9 +575,15 @@ declare let window: CustomWindow;
   async function main(): Promise<void> {
     infoContainer = await waitForElement("div.main-trackInfo-container", 1000) as HTMLDivElement | null;
 
-    genreContainer = document.createElement("div");
-    genreContainer.className = "main-trackInfo-genres ellipsis-one-line main-type-finale";
+    // Fix the grid for the info container.
+    if (infoContainer) infoContainer.style.gridTemplate = '"title title" "badges subtitle" "genres genres" / auto 1fr auto';
 
+    genreContainer = document.createElement("div");
+    genreContainer.className = "ellipsis-one-line main-type-finale";
+    // Add the `genres` area to the container to match the info container.
+    genreContainer.style.gridArea = "genres";
+
+    // Show the popup on right click.
     genreContainer.addEventListener("contextmenu", genrePopup);
 
     await updateGenres();
@@ -615,4 +617,7 @@ declare let window: CustomWindow;
       );
     }
   }
-})();
+}
+
+// Let's start !
+initializeSpotifyGenres();
