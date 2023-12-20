@@ -33,6 +33,12 @@ spicetify config extensions spotifyGenres.js
 spicetify apply
 ```
 
+## Install from Marketplace
+
+You can install this extension from the Spicetify Marketplace, just search for "Better Spotify Genres" and click install.
+
+## Development
+
 ## Credits
 
 Forked from [Tetrax-10's Spotify-Genres](https://github.com/Tetrax-10/Spicetify-Extensions).
