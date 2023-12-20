@@ -1,0 +1,47 @@
+name: "Make bundle"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'pnpm'
+      - name: Install pnpm dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm build
+
+      - name: Change branch
+        run: |
+          cp ./dist/spotifyGenres.js ..
+          git checkout build
+          cp ../spotifyGenres.js ./spotifyGenres.js
+
+      - uses: EndBug/add-and-commit@v9
+        with:
+          fetch: false
+          add: 'spotifyGenres.js'
+          push: true
+
+          message: 'Upload bundle'
+          default_author: github_actor
+          
+          pathspec_error_handling: exitImmediately
+      
