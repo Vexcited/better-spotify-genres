@@ -28,6 +28,12 @@ export interface LastFMTrackResponse {
   }
 }
 
+export interface LastFMTrackError {
+  error: number
+  links: unknown[]
+  message: string
+}
+
 /**
  * Fetch data from Last.FM
  */
@@ -35,14 +41,18 @@ export async function fetchDataFromLastFM(artistName: string, trackName: string)
   const url = `https://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=${LFMApiKey}&artist=${encodeURIComponent(artistName)}&track=${encodeURIComponent(trackName)}&format=json`
 
   try {
-    const response = await fetch(url)
-    const data = await response.json()
+    const response = await fetch(url);
+    const data = await response.json() as LastFMTrackResponse | LastFMTrackError;
+
+    // Track is not found in Last.FM
+    if ("error" in data) {
+      return null;
+    }
     
     return data;
   }
-  catch (error) {
-    // TODO: Add a toast for this error.
-    console.error(error);
+  // Might be a network error.
+  catch {
     return null;
   }
 }
