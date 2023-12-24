@@ -157,48 +157,53 @@ function initializeSpotifyGenres(): void {
 
   async function getAllArtistsGenres(allArtistURI: string[], src: "artist" | "recursive" | null = null): Promise<string[]> {
     const allGenresPromises = allArtistURI.map((uri) => fetchArtistGenres(uri.split(":")[2]));
+    const allGenresCombined = await Promise.allSettled(allGenresPromises);
 
-    const allGenresCombined = await Promise.all(allGenresPromises);
-    let allGenres: string[] = allGenresCombined.flat();
+    // Filter the fulfilled promises.
+    let allGenresFulfilled = allGenresCombined.map((item) => {
+      if (item.status === "fulfilled") {
+        return item.value;
+      }
+    }).filter(Boolean) as string[][];
+
+    let allGenres = allGenresFulfilled.flat();
 
     if (allGenres.length === 0) {
-        let targetedArtistID: string;
+      let targetedArtistID: string;
 
-        if (src === "artist") {
-          targetedArtistID = allArtistURI[0].split(":")[2]
+      if (src === "artist") {
+        targetedArtistID = allArtistURI[0].split(":")[2]
+      }
+      else if (src === "recursive") {
+        return [];
+      }
+      else {
+        targetedArtistID = Spicetify.Player.data.item.metadata.artist_uri.split(":")[2]
+      }
+
+      const artistResponse: {
+        related_artists: {
+          artists: Array<{ uri: string }>
         }
-        else if (src === "recursive") {
-          return [];
+      } | null = await Spicetify.CosmosAsync.get(`wg://artist/v1/${targetedArtistID}/desktop?format=json`).catch(() => null);
+      
+      if (!artistResponse) return [];
+      if (!artistResponse.related_artists?.artists) return [];
+
+      // Get the URI of every artists.
+      const tempAllArtistURI = artistResponse.related_artists.artists.map((artist) => artist.uri);
+
+      let count = 5;
+      while (count !== 25) {
+        allGenres = await getAllArtistsGenres(tempAllArtistURI.slice(count - 5, count), "recursive");
+        
+        if (allGenres.length != 0) {
+          count = 25
         }
         else {
-          targetedArtistID = Spicetify.Player.data.item.metadata.artist_uri.split(":")[2]
+          count += 5
         }
-
-        const artistResponse: {
-          related_artists: {
-            artists: {
-              uri: string;
-            }[];
-          };
-        } = await Spicetify.CosmosAsync.get(`wg://artist/v1/${targetedArtistID}/desktop?format=json`);
-        
-        if (!artistResponse.related_artists.artists) {
-          return [];
-        }
-
-        let tempAllArtistURI = artistResponse.related_artists?.artists.map((artist) => artist.uri)
-
-        let count = 5;
-        while (count !== 25) {
-          allGenres = await getAllArtistsGenres(tempAllArtistURI.slice(count - 5, count), "recursive");
-          
-          if (allGenres.length != 0) {
-            count = 25
-          }
-          else {
-            count += 5
-          }
-        }
+      }
     }
 
     allGenres = Array.from(new Set(allGenres));
@@ -208,41 +213,41 @@ function initializeSpotifyGenres(): void {
   }
 
   async function injectGenre() {
-      let allArtistURI = getAllArtistsURIFromCurrentTrack()
-      let allGenres = await getAllArtistsGenres(allArtistURI)
+    let allArtistURI = getAllArtistsURIFromCurrentTrack();
+    let allGenres = await getAllArtistsGenres(allArtistURI);
 
-      if (!allGenres) {
-        allGenresForPopupModal = []
-        removeGenresFromUI()
-        return;
-      }
+    if (!allGenres) {
+      allGenresForPopupModal = []
+      removeGenresFromUI()
+      return;
+    }
 
-      const soundOfSpotifyPlaylistsPromises = await Promise.all(allGenres.map((genre) => fetchSoundOfSpotifyPlaylist(genre)))
-      const soundOfSpotifyPlaylists = soundOfSpotifyPlaylistsPromises.filter((item) => item.uri !== null) as Array<{
-        uri: string,
-        genre: string
-      }>;
+    const soundOfSpotifyPlaylistsPromises = await Promise.all(allGenres.map((genre) => fetchSoundOfSpotifyPlaylist(genre)))
+    const soundOfSpotifyPlaylists = soundOfSpotifyPlaylistsPromises.filter((item) => item.uri !== null) as Array<{
+      uri: string,
+      genre: string
+    }>;
 
-      const allGenreElementsCombined = soundOfSpotifyPlaylists.map((playlist) => [
-        [
-          `<a href="${playlist.uri.includes("|||") ? '#"' + ' onclick="genrePopup()" ' : playlist.uri + '"'} style="color: var(--spice-subtext); font-size: 12px">${playlist.genre.replace(
-            /(^\w{1})|([\s-]+\w{1})/g,
-            (letter) => letter.toUpperCase()
-          )}</a>`,
-        ],
-        [`<span>, </span>`]
-      ]);
+    const allGenreElementsCombined = soundOfSpotifyPlaylists.map((playlist) => [
+      [
+        `<a href="${playlist.uri.includes("|||") ? '#"' + ' onclick="genrePopup()" ' : playlist.uri + '"'} style="color: var(--spice-subtext); font-size: 12px">${playlist.genre.replace(
+          /(^\w{1})|([\s-]+\w{1})/g,
+          (letter) => letter.toUpperCase()
+        )}</a>`,
+      ],
+      [`<span>, </span>`]
+    ]);
 
-      const allGenreElements = allGenreElementsCombined.flat(Infinity);
-      if (allGenreElements[allGenreElements.length - 1] == "<span>, </span>") {
-        allGenreElements.pop()
-      }
+    const allGenreElements = allGenreElementsCombined.flat(Infinity);
+    if (allGenreElements[allGenreElements.length - 1] == "<span>, </span>") {
+      allGenreElements.pop()
+    }
 
-      const allGenreElementsHTML = allGenreElements.join("")
-      if (genreContainer) genreContainer.innerHTML = allGenreElementsHTML;
+    const allGenreElementsHTML = allGenreElements.join("")
+    if (genreContainer) genreContainer.innerHTML = allGenreElementsHTML;
 
-      infoContainer = await waitForElement("div.main-trackInfo-container", 1000) as HTMLDivElement | null;
-      if (genreContainer) infoContainer?.appendChild(genreContainer)
+    infoContainer = await waitForElement("div.main-trackInfo-container", 1000) as HTMLDivElement | null;
+    if (genreContainer) infoContainer?.appendChild(genreContainer)
   }
 
   const settingsMenuCSS = React.createElement(
