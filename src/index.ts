@@ -247,7 +247,11 @@ function initializeSpotifyGenres(): void {
     if (genreContainer) genreContainer.innerHTML = allGenreElementsHTML;
 
     infoContainer = await waitForElement("div.main-trackInfo-container", 1000) as HTMLDivElement | null;
-    if (genreContainer) infoContainer?.appendChild(genreContainer)
+    if (genreContainer && infoContainer) {
+      // Fix the grid for the info container.
+      infoContainer.style.gridTemplate = '"title title" "badges subtitle" "genres genres" / auto 1fr auto';
+      infoContainer.appendChild(genreContainer)
+    }
   }
 
   const settingsMenuCSS = React.createElement(
@@ -508,6 +512,7 @@ function initializeSpotifyGenres(): void {
     infoContainer = await waitForElement("div.main-trackInfo-container", 1000) as HTMLDivElement | null;
     try {
       if (!infoContainer || !genreContainer) return;
+      infoContainer.style.removeProperty("grid-template")
       infoContainer.removeChild(genreContainer);
     } catch {}
   }
