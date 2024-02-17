@@ -6,6 +6,8 @@ import type * as ReactTypes from "react";
 import type { CustomWindow } from "./window";
 declare let window: CustomWindow;
 
+const LOG_PREFIX = "[better-spotify-genres]";
+
 function initializeSpotifyGenres(): void {
   // Make sure everything is loaded.
   if (!(Spicetify.CosmosAsync && Spicetify.Platform && Spicetify.URI && Spicetify.Player.data)) {
@@ -213,10 +215,19 @@ function initializeSpotifyGenres(): void {
   }
 
   async function injectGenre() {
-    let allArtistURI = getAllArtistsURIFromCurrentTrack();
-    let allGenres = await getAllArtistsGenres(allArtistURI);
+    let allGenres = [...lastFmTags];
+
+    // Get genres from artists if Last.FM tags are not available.
+    if (allGenres.length === 0) {
+      console.warn(LOG_PREFIX, "No Last.FM tags found for the current track. Fetching genres from artists...");
+      let allArtistURI = getAllArtistsURIFromCurrentTrack();
+      allGenres = await getAllArtistsGenres(allArtistURI);
+    }
+
+    console.info(LOG_PREFIX, "All genres of the current track: ", allGenres);
 
     if (!allGenres) {
+      console.warn(LOG_PREFIX, "No genres found for the current track. Removing...");
       allGenresForPopupModal = []
       removeGenresFromUI()
       return;
@@ -519,12 +530,13 @@ function initializeSpotifyGenres(): void {
 
   async function updateGenres(): Promise<void> {
     if (!CONFIG.state || Spicetify.Player.data.item.metadata.is_local || Spicetify.URI.fromString(Spicetify.Player.data.item.uri).type !== "track") {
+      console.warn(LOG_PREFIX, "State is disabled or the current track is local. Removing...");
       removeGenresFromUI();
       return;
     }
 
-    injectGenre();
-    updateLastFmTags();
+    await updateLastFmTags();
+    await injectGenre();
   }
 
   function artistPageGenreOnClick(dataValue: string): void {
