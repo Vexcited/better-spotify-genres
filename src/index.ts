@@ -244,10 +244,10 @@ function initializeSpotifyGenres(): void {
     }
 
     const allGenreElementsHTML = allGenreElements.join("")
-    if (genreContainer) genreContainer.innerHTML = allGenreElementsHTML;
+    if (genreContainer !== null) genreContainer.innerHTML = allGenreElementsHTML;
 
     infoContainer = await waitForElement("div.main-trackInfo-container", 1000) as HTMLDivElement | null;
-    if (genreContainer && infoContainer) {
+    if (genreContainer !== null && infoContainer !== null) {
       // Fix the grid for the info container.
       infoContainer.style.gridTemplate = '"title title" "badges subtitle" "genres genres" / auto 1fr auto';
       infoContainer.appendChild(genreContainer)
@@ -511,7 +511,7 @@ function initializeSpotifyGenres(): void {
   async function removeGenresFromUI(): Promise<void> {
     infoContainer = await waitForElement("div.main-trackInfo-container", 1000) as HTMLDivElement | null;
     try {
-      if (!infoContainer || !genreContainer) return;
+      if (infoContainer === null || genreContainer === null) return;
       infoContainer.style.removeProperty("grid-template")
       infoContainer.removeChild(genreContainer);
     } catch {}
