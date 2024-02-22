@@ -215,16 +215,8 @@ function initializeSpotifyGenres(): void {
   }
 
   async function injectGenre() {
-    let allGenres = [...lastFmTags];
-
-    // Get genres from artists if Last.FM tags are not available.
-    if (allGenres.length === 0) {
-      console.warn(LOG_PREFIX, "No Last.FM tags found for the current track. Fetching genres from artists...");
-      let allArtistURI = getAllArtistsURIFromCurrentTrack();
-      allGenres = await getAllArtistsGenres(allArtistURI);
-    }
-
-    console.info(LOG_PREFIX, "All genres of the current track: ", allGenres);
+    let allArtistURI = getAllArtistsURIFromCurrentTrack();
+    let allGenres = await getAllArtistsGenres(allArtistURI);
 
     if (!allGenres) {
       console.warn(LOG_PREFIX, "No genres found for the current track. Removing...");
