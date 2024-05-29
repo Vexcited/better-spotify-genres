@@ -249,7 +249,7 @@ function initializeSpotifyGenres(): void {
     const allGenreElementsHTML = allGenreElements.join("")
     if (genreContainer !== null) genreContainer.innerHTML = allGenreElementsHTML;
 
-    infoContainer = await waitForElement("div.main-trackInfo-container", 1000) as HTMLDivElement | null;
+    await assignInfoContainer();
     if (genreContainer !== null && infoContainer !== null) {
       // Fix the grid for the info container.
       infoContainer.style.gridTemplate = '"title title" "badges subtitle" "genres genres" / auto 1fr auto';
@@ -500,6 +500,26 @@ function initializeSpotifyGenres(): void {
   }
 
   let infoContainer: HTMLDivElement | null = null;
+  const assignInfoContainer = async () => {
+    const containers = await Promise.all([
+      waitForElement<HTMLDivElement>("div.main-trackInfo-container", 1000),
+      
+      // On some clients, the class is different.
+      // See https://github.com/Vexcited/better-spotify-genres/issues/7
+      waitForElement<HTMLDivElement>("div.main-nowPlayingWidget-trackInfo", 1000)
+    ]);
+
+    const container = containers.find((item) => item !== null);
+
+    if (!container) {
+      console.error(LOG_PREFIX, "Couldn't find the info container, genres will not be displayed.");
+      infoContainer = null;
+      return;
+    }
+     
+    infoContainer = container;
+  }
+
   let genreContainer: HTMLDivElement | null = null;
   
   (function initMain() {
@@ -512,7 +532,8 @@ function initializeSpotifyGenres(): void {
   })();
 
   async function removeGenresFromUI(): Promise<void> {
-    infoContainer = await waitForElement("div.main-trackInfo-container", 1000) as HTMLDivElement | null;
+    await assignInfoContainer();
+    
     try {
       if (infoContainer === null || genreContainer === null) return;
       infoContainer.style.removeProperty("grid-template")
@@ -584,7 +605,7 @@ function initializeSpotifyGenres(): void {
   }
 
   async function main(): Promise<void> {
-    infoContainer = await waitForElement("div.main-trackInfo-container", 1000) as HTMLDivElement | null;
+    await assignInfoContainer();
 
     // Fix the grid for the info container.
     if (infoContainer) infoContainer.style.gridTemplate = '"title title" "badges subtitle" "genres genres" / auto 1fr auto';
