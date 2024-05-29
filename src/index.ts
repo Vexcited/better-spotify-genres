@@ -85,15 +85,15 @@ function initializeSpotifyGenres(): void {
    * Find an element in the DOM,
    * returns `null` if not found in the given timeout.
    */
-  async function waitForElement(selector: string, timeout: number | null = null, location = document.body): Promise<HTMLElement | null> {
-    return new Promise<HTMLElement | null>((resolve) => {
+  async function waitForElement<T extends HTMLElement = HTMLElement>(selector: string, timeout: number | null = null, location = document.body): Promise<T | null> {
+    return new Promise<T | null>((resolve) => {
       if (document.querySelector(selector)) {
-        return resolve(document.querySelector(selector) as HTMLElement | null);
+        return resolve(document.querySelector(selector) as T | null);
       }
 
       const observer = new MutationObserver(() => {
         if (document.querySelector(selector)) {
-          resolve(document.querySelector(selector) as HTMLElement | null);
+          resolve(document.querySelector(selector) as T | null);
           observer.disconnect();
         }
         else {
@@ -107,8 +107,8 @@ function initializeSpotifyGenres(): void {
       });
 
       observer.observe(location, {
-          childList: true,
-          subtree: true
+        childList: true,
+        subtree: true
       });
     })
   }
