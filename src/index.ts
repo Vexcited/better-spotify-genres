@@ -243,11 +243,11 @@ function initializeSpotifyGenres(): void {
     }
 
     const allGenreElementsHTML = allGenreElements.join("")
-    if (genreContainer !== null) genreContainer.innerHTML = allGenreElementsHTML;
+    genreContainer = document.createElement("div");
+    genreContainer.innerHTML = allGenreElementsHTML;
 
     await assignInfoContainer();
-    if (genreContainer !== null && infoContainer !== null) {
-      genreContainer = document.createElement("div");
+    if (infoContainer !== null) {
       genreContainer.className = "ellipsis-one-line";
       // Add the `genres` area to the container to match the info container.
       genreContainer.style.gridArea = "genres";
