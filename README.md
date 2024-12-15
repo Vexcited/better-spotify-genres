@@ -10,11 +10,9 @@ Right click on a genre in the player bar.
 
 ![Pop-up](assets/popup.png)
 
-### Toggle
+### See below the current song playing.
 
-You can easily toggle the widget by clicking on the icon in the player bar.
-
-![Widget](assets/widget-demo.gif)
+![Currently-Playing](assets/currently-playing.png)
 
 ## Credits
 
