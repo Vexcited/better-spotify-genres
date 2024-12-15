@@ -243,7 +243,7 @@ function initializeSpotifyGenres(): void {
     }
 
     const allGenreElementsHTML = allGenreElements.join("")
-    genreContainer = document.createElement("div");
+    if (!genreContainer) genreContainer = document.createElement("div");
     genreContainer.innerHTML = allGenreElementsHTML;
 
     await assignInfoContainer();
@@ -556,6 +556,9 @@ function initializeSpotifyGenres(): void {
       if (infoContainer === null || genreContainer === null) return;
       infoContainer.style.removeProperty("grid-template")
       infoContainer.removeChild(genreContainer);
+
+      genreContainer = null;
+      infoContainer = null;
     } catch {}
   }
 
