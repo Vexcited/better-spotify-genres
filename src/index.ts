@@ -45,7 +45,6 @@ function initializeSpotifyGenres(): void {
   }
 
   const defaultConfiguration = {
-    state: true,
     cached: {
       pop: "spotify:playlist:6gS3HhOiI17QNojjPuPzqc",
     } as Record<string, string>,
@@ -248,8 +247,30 @@ function initializeSpotifyGenres(): void {
 
     await assignInfoContainer();
     if (genreContainer !== null && infoContainer !== null) {
+      genreContainer = document.createElement("div");
+      genreContainer.className = "ellipsis-one-line";
+      // Add the `genres` area to the container to match the info container.
+      genreContainer.style.gridArea = "genres";
+
+      // Show the popup on right click.
+      genreContainer.addEventListener("contextmenu", genrePopup);
+    
       // Fix the grid for the info container.
       infoContainer.style.gridTemplate = '"title title" "badges subtitle" "genres genres" / auto 1fr auto';
+      
+      // Set the width of the genre container.
+      const titleContainer = infoContainer.querySelector("div.main-trackInfo-name") as HTMLDivElement | null;
+      titleContainer?.style.setProperty("width", "fit-content");
+      const titleWidth = titleContainer?.clientWidth ?? 0;
+
+      const badgesContainer = infoContainer.querySelector("div.main-trackInfo-enhanced") as HTMLDivElement | null;
+      const artistsContainer = infoContainer.querySelector("div.main-trackInfo-artists") as HTMLDivElement | null;
+      artistsContainer?.style.setProperty("width", "fit-content");
+      const artistsWidth = (badgesContainer?.clientWidth ?? 0) + (artistsContainer?.clientWidth ?? 0);
+
+      const genresWidth = Math.max(titleWidth, artistsWidth);
+      genreContainer.style.setProperty("width", `${genresWidth}px`);
+
       infoContainer.appendChild(genreContainer)
     }
   }
@@ -539,7 +560,7 @@ function initializeSpotifyGenres(): void {
   }
 
   async function updateGenres(): Promise<void> {
-    if (!CONFIG.state || Spicetify.Player.data.item.metadata.is_local || Spicetify.URI.fromString(Spicetify.Player.data.item.uri).type !== "track") {
+    if (Spicetify.Player.data.item.metadata.is_local || Spicetify.URI.fromString(Spicetify.Player.data.item.uri).type !== "track") {
       console.warn(LOG_PREFIX, "State is disabled or the current track is local. Removing...");
       removeGenresFromUI();
       return;
@@ -602,19 +623,6 @@ function initializeSpotifyGenres(): void {
   }
 
   async function main(): Promise<void> {
-    await assignInfoContainer();
-
-    // Fix the grid for the info container.
-    if (infoContainer) infoContainer.style.gridTemplate = '"title title" "badges subtitle" "genres genres" / auto 1fr auto';
-
-    genreContainer = document.createElement("div");
-    genreContainer.className = "ellipsis-one-line main-type-finale";
-    // Add the `genres` area to the container to match the info container.
-    genreContainer.style.gridArea = "genres";
-
-    // Show the popup on right click.
-    genreContainer.addEventListener("contextmenu", genrePopup);
-
     await updateGenres();
     Spicetify.Player.addEventListener("songchange", updateGenres);
 
