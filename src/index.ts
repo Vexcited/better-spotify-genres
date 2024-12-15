@@ -22,9 +22,6 @@ function initializeSpotifyGenres(): void {
   let allGenresForPopupModal: string[] = [];
   let lastFmTags: string[] = [];
 
-  const icon = `<svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="17px" height="17px" viewBox="0 0 892.000000 877.000000" preserveAspectRatio="xMidYMid meet"><g transform="translate(0.000000,877.000000) scale(0.100000,-0.100000)" fill="currentcolor" stroke="none"><path d="M4365 8296 c-86 -27 -154 -88 -193 -174 -16 -34 -17 -213 -22 -2550 l-5 -2512 -75 53 c-279 197 -634 329 -1015 378 -129 17 -481 17 -610 0 -901 -116 -1574 -677 -1681 -1402 -92 -628 306 -1259 991 -1566 225 -102 440 -162 690 -194 129 -17 481 -17 610 0 674 86 1226 421 1513 916 86 149 149 344 171 530 7 61 11 686 11 1946 l0 1857 1413 -530 c916 -344 1430 -532 1463 -535 115 -12 238 58 290 164 l29 58 0 775 c0 720 -1 781 -19 855 -59 257 -147 430 -310 617 -115 131 -252 235 -409 308 -81 38 -2546 965 -2662 1001 -69 22 -123 23 -180 5z m2578 -1545 c169 -74 303 -227 374 -427 l28 -79 3 -501 3 -502 -1298 487 -1298 487 -3 681 -2 681 1072 -403 c590 -222 1094 -412 1121 -424z m-3963 -3856 c593 -78 1044 -400 1150 -820 118 -470 -282 -947 -930 -1109 -805 -201 -1677 171 -1830 779 -118 471 289 955 937 1111 219 53 461 67 673 39z"/></g></svg>`
-  const iconActive = `<svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="17px" height="17px" viewBox="0 0 892.000000 877.000000" preserveAspectRatio="xMidYMid meet"><g transform="translate(0.000000,877.000000) scale(0.100000,-0.100000)" fill="currentcolor" stroke="none"><path d="M4365 8296 c-86 -27 -154 -88 -193 -174 -16 -34 -17 -213 -22 -2550 l-5 -2512 -75 53 c-279 197 -634 329 -1015 378 -129 17 -481 17 -610 0 -901 -116 -1574 -677 -1681 -1402 -92 -628 306 -1259 991 -1566 225 -102 440 -162 690 -194 129 -17 481 -17 610 0 674 86 1226 421 1513 916 86 149 149 344 171 530 7 61 11 686 11 1946 l0 1857 1413 -530 c916 -344 1430 -532 1463 -535 115 -12 238 58 290 164 l29 58 0 775 c0 720 -1 781 -19 855 -59 257 -147 430 -310 617 -115 131 -252 235 -409 308 -81 38 -2546 965 -2662 1001 -69 22 -123 23 -180 5z"/></g></svg>`
-
   // Define the react types.
   const React = Spicetify.React as typeof ReactTypes;
 
@@ -388,10 +385,10 @@ function initializeSpotifyGenres(): void {
       .popup-row .display-none {
           display: none !important;
       }
-      .GenericModal[aria-label*="Genres of"] .main-trackCreditsModal-header .tetrax-settings-discord-link {
+      .GenericModal[aria-label*="Genres of"] .main-trackCreditsModal-header {
           color: var(--spice-custom-success);
       }
-      .GenericModal[aria-label*="Genres of"] .main-trackCreditsModal-header .tetrax-settings-discord-link:hover {
+      .GenericModal[aria-label*="Genres of"] .main-trackCreditsModal-header {
           color: var(--spice-custom-link-hover);
       }`
   )
@@ -625,29 +622,6 @@ function initializeSpotifyGenres(): void {
     Spicetify.Platform.History.listen((data: { pathname: string }) => {
       updateArtistPage(data.pathname);
     });
-
-    if (Spicetify.Playbar?.Widget) {
-      new Spicetify.Playbar.Widget(
-        CONFIG.state ? "Hide Spotify Genres" : "Show Spotify Genres",
-        CONFIG.state ? iconActive : icon,
-        (element) => {
-          if (CONFIG.state) {
-              element.icon = icon
-              element.label = "Show Spotify Genres"
-              CONFIG.state = false
-          }
-          else {
-              element.icon = iconActive
-              element.label = "Hide Spotify Genres"
-              CONFIG.state = true
-          }
-
-          saveConfig("state", CONFIG.state);
-          updateGenres();
-        },
-        false
-      );
-    }
   }
 }
 
