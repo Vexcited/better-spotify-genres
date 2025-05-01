@@ -14,7 +14,8 @@
   "scripts": {
     "lint": "tsc",
     "build": "tsup && move-cli ./dist/spotifyGenres.global.js ./dist/spotifyGenres.js",
-    "move:windows": "powershell Move-Item -Force -Path .\\dist\\spotifyGenres.js -Destination $env:USERPROFILE\\AppData\\Roaming\\spicetify\\Extensions\\spotifyGenres.js"
+    "move:windows": "powershell Move-Item -Force -Path .\\dist\\spotifyGenres.js -Destination $env:USERPROFILE\\AppData\\Roaming\\spicetify\\Extensions\\spotifyGenres.js",
+    "move:macos": "mv ./dist/spotifyGenres.js ~/.config/spicetify/Extensions"
   },
   "devDependencies": {
     "@types/react": "^18.3.20",
