@@ -6,7 +6,10 @@ import type * as ReactTypes from "react";
 import type { CustomWindow } from "./window";
 declare let window: CustomWindow;
 
-const LOG_PREFIX = "[better-spotify-genres]";
+const log = (level: "info" | "warn" | "error", ...args: Array<any>) => {
+  const prefix = '\x1b[35m[better-spotify-genres]\x1b[0m';
+  console[level](prefix, ...args);
+};
 
 function initializeSpotifyGenres(): void {
   // Make sure everything is loaded.
@@ -18,6 +21,12 @@ function initializeSpotifyGenres(): void {
   // Define globally available functions.
   window.genrePopup = () => genrePopup();
   window.artistPageGenreOnClick = (dataValue) => artistPageGenreOnClick(dataValue);
+  window._onGenreItemMouseOver = (el) => {
+    el.style.setProperty("color", "var(--spice-text)");
+  }
+  window._onGenreItemMouseOut = (el) => {
+    el.style.setProperty("color", "var(--spice-subtext)");
+  }
 
   let allGenresForPopupModal: string[] = [];
   let lastFmTags: string[] = [];
@@ -57,7 +66,7 @@ function initializeSpotifyGenres(): void {
     if (item) {
       let tempConfig = getConfig();
       tempConfig[item] = value;
-      
+
       setLocalStorageDataWithKey("showGenre:settings", JSON.stringify(tempConfig));
       return;
     }
@@ -125,7 +134,7 @@ function initializeSpotifyGenres(): void {
       if (item.owner.id === "thesoundsofspotify" && re.test(item.name)) {
         // Add the URI in cache.
         CONFIG.cached[camelize(genre)] = item.uri;
-        
+
         // Save the cache into localStorage.
         saveConfig("cached", CONFIG.cached);
         return { uri: item.uri, genre };
@@ -145,7 +154,7 @@ function initializeSpotifyGenres(): void {
     for (let i = 1; i < 10; i++) {
       const indexURI = `artist_uri:${i}` as keyof Spicetify.TrackMetadata;
       const artistURI = metadata[indexURI] as string;
-      
+
       if (artistURI) artistsURI.push(artistURI);
       else break;
     }
@@ -184,7 +193,7 @@ function initializeSpotifyGenres(): void {
           artists: Array<{ uri: string }>
         }
       } | null = await Spicetify.CosmosAsync.get(`wg://artist/v1/${targetedArtistID}/desktop?format=json`).catch(() => null);
-      
+
       if (!artistResponse) return [];
       if (!artistResponse.related_artists?.artists) return [];
 
@@ -194,7 +203,7 @@ function initializeSpotifyGenres(): void {
       let count = 5;
       while (count !== 25) {
         allGenres = await getAllArtistsGenres(tempAllArtistURI.slice(count - 5, count), "recursive");
-        
+
         if (allGenres.length != 0) {
           count = 25
         }
@@ -215,7 +224,7 @@ function initializeSpotifyGenres(): void {
     let allGenres = await getAllArtistsGenres(allArtistURI);
 
     if (!allGenres) {
-      console.warn(LOG_PREFIX, "No genres found for the current track. Removing...");
+      log("warn", "No genres found for the current track, removing genres from UI...");
       allGenresForPopupModal = []
       removeGenresFromUI()
       return;
@@ -227,49 +236,45 @@ function initializeSpotifyGenres(): void {
       genre: string
     }>;
 
-    const allGenreElementsCombined = soundOfSpotifyPlaylists.map((playlist) => [
-      [
-        `<a href="${playlist.uri.includes("|||") ? '#"' + ' onclick="genrePopup()" ' : playlist.uri + '"'} style="color: var(--spice-subtext); font-size: 12px">${playlist.genre.replace(
-          /(^\w{1})|([\s-]+\w{1})/g,
-          (letter) => letter.toUpperCase()
-        )}</a>`,
-      ],
-      [`<span>, </span>`]
-    ]);
+    const allGenreElementsHTML = soundOfSpotifyPlaylists.map((playlist) =>
+      `<a href="${playlist.uri.includes("|||") ? '#"' + ' onclick="genrePopup()" ' : playlist.uri + '"'} onmouseover="_onGenreItemMouseOver(this)" onmouseout="_onGenreItemMouseOut(this)" style="color: var(--spice-subtext)">${playlist.genre.replace(
+        /(^\w{1})|([\s-]+\w{1})/g,
+        (letter) => letter.toUpperCase()
+      )}</a>`,
+    ).join("<span>, </span>");
 
-    const allGenreElements = allGenreElementsCombined.flat(Infinity);
-    if (allGenreElements[allGenreElements.length - 1] == "<span>, </span>") {
-      allGenreElements.pop()
-    }
-
-    const allGenreElementsHTML = allGenreElements.join("")
     if (!genreContainer) genreContainer = document.createElement("div");
     genreContainer.innerHTML = allGenreElementsHTML;
 
     await assignInfoContainer();
     if (infoContainer !== null) {
-      genreContainer.className = "ellipsis-one-line";
+      genreContainer.style.fontSize = "12px";
+      genreContainer.style.color = "var(--spice-misc)";
+      genreContainer.style.setProperty("color", "var(--spice-subtext)");
+
+      // Add the ellipsis to make sure it does not overflow.
+      genreContainer.classList.add("ellipsis-one-line");
+
       // Add the `genres` area to the container to match the info container.
-      genreContainer.style.gridArea = "genres";
+      genreContainer.style.setProperty("grid-area", "genres");
 
       // Show the popup on right click.
       genreContainer.addEventListener("contextmenu", genrePopup);
-    
-      // Fix the grid for the info container.
-      infoContainer.style.gridTemplate = '"title title" "badges subtitle" "genres genres" / auto 1fr auto';
-      
-      // Set the width of the genre container.
-      const titleContainer = infoContainer.querySelector("div.main-trackInfo-name") as HTMLDivElement | null;
-      titleContainer?.style.setProperty("width", "fit-content");
-      const titleWidth = titleContainer?.clientWidth ?? 0;
 
-      const badgesContainer = infoContainer.querySelector("div.main-trackInfo-enhanced") as HTMLDivElement | null;
-      const artistsContainer = infoContainer.querySelector("div.main-trackInfo-artists") as HTMLDivElement | null;
-      artistsContainer?.style.setProperty("width", "fit-content");
-      const artistsWidth = (badgesContainer?.clientWidth ?? 0) + (artistsContainer?.clientWidth ?? 0);
+      { // Modify the grid template for the info container, to add genres !
+        let [template, properties] = window.getComputedStyle(infoContainer)
+          .getPropertyValue("grid-template")
+          .split("/").map((item) => item.trim());
 
-      const genresWidth = Math.max(titleWidth, artistsWidth);
-      genreContainer.style.setProperty("width", `${genresWidth}px`);
+        // Make sure the template is not already set.
+        const TEMPLATE = '"genres genres"';
+        if (!template.endsWith(TEMPLATE)) {
+          template += ` ${TEMPLATE}`;
+        }
+
+        const gridTemplate = `${template} / ${properties}`;
+        infoContainer.style.setProperty("grid-template", gridTemplate);
+      }
 
       infoContainer.appendChild(genreContainer)
     }
@@ -298,7 +303,7 @@ function initializeSpotifyGenres(): void {
       }
       .popup-row .div-title {
           color: var(--spice-text);
-      }                
+      }
       .popup-row .divider {
           height: 2px;
           border-width: 0;
@@ -433,14 +438,14 @@ function initializeSpotifyGenres(): void {
         name: name.replace(/(^\w{1})|([\s-]+\w{1})/g, (letter) => letter.toUpperCase()),
         onclickFun: async () => {
           const playlist = await fetchSoundOfSpotifyPlaylist(name);
-          
+
           if (playlist.uri === null || playlist.uri.includes("|||")) {
             Spicetify.Platform.History.push(`/search/${name}/playlists`)
           }
           else {
             Spicetify.Platform.History.push(`/playlist/${playlist.uri.split(":")[2]}`)
           }
-          
+
           Spicetify.PopupModal.hide();
         },
       });
@@ -449,10 +454,10 @@ function initializeSpotifyGenres(): void {
 
   async function updateLastFmTags(): Promise<void> {
     const { artist_name: artistName, title: trackName } = Spicetify.Player.data.item.metadata;
-    
+
     // Reset global tags.
     lastFmTags = [];
-    
+
     const response = await fetchDataFromLastFM(artistName, trackName)
     if (!response) return;
 
@@ -521,7 +526,7 @@ function initializeSpotifyGenres(): void {
   const assignInfoContainer = async () => {
     const containers = await Promise.all([
       waitForElement<HTMLDivElement>("div.main-trackInfo-container", 1000),
-      
+
       // On some clients, the class is different.
       // See https://github.com/Vexcited/better-spotify-genres/issues/7
       waitForElement<HTMLDivElement>("div.main-nowPlayingWidget-trackInfo", 1000)
@@ -530,16 +535,16 @@ function initializeSpotifyGenres(): void {
     const container = containers.find((item) => item !== null);
 
     if (!container) {
-      console.error(LOG_PREFIX, "Couldn't find the info container, genres will not be displayed.");
+      log("error", "Couldn't find the info container, genres will not be displayed.");
       infoContainer = null;
       return;
     }
-     
+
     infoContainer = container;
   }
 
   let genreContainer: HTMLDivElement | null = null;
-  
+
   (function initMain() {
     if (!Spicetify.Player.data) {
       setTimeout(initMain, 1000);
@@ -551,7 +556,7 @@ function initializeSpotifyGenres(): void {
 
   async function removeGenresFromUI(): Promise<void> {
     await assignInfoContainer();
-    
+
     try {
       if (infoContainer === null || genreContainer === null) return;
       infoContainer.style.removeProperty("grid-template")
@@ -564,7 +569,7 @@ function initializeSpotifyGenres(): void {
 
   async function updateGenres(): Promise<void> {
     if (Spicetify.Player.data.item.metadata.is_local || Spicetify.URI.fromString(Spicetify.Player.data.item.uri).type !== "track") {
-      console.warn(LOG_PREFIX, "State is disabled or the current track is local. Removing...");
+      log("warn", "State is disabled or the current track is local, removing genres from UI...");
       removeGenresFromUI();
       return;
     }
@@ -579,10 +584,10 @@ function initializeSpotifyGenres(): void {
 
   async function makeDOMForArtistPage(allGenres: string[]): Promise<void> {
       if (!allGenres) return
-      
+
       const allGenreElementsPromises = allGenres.map(async (genre) => {
         const playlist = await fetchSoundOfSpotifyPlaylist(genre)
-        
+
         if (playlist.uri !== null) {
           return [
             [
