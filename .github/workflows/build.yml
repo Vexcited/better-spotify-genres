@@ -15,28 +15,28 @@ jobs:
         with:
           ref: main
           path: main
-      
+
       - uses: actions/checkout@v4
         with:
           ref: build
           path: build
 
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v4
         with:
-          version: 8
+          version: latest
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: 18
-          cache: 'pnpm'
           cache-dependency-path: main/pnpm-lock.yaml
+          node-version: 22
+          cache: pnpm
 
       - name: Bundle and push
         run: |
-          cd main  
+          cd main
           pnpm install
           pnpm build
-          
+
           cp ./dist/spotifyGenres.js ../build
           cd ../build
 
