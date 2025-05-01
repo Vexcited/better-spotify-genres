@@ -20,11 +20,11 @@ Right click on a genre in the player bar.
 
 Copy [`spotifyGenres.js`](https://raw.githubusercontent.com/Vexcited/better-spotify-genres/build/spotifyGenres.js) from the `build` branch into your [Spicetify](https://github.com/spicetify/spicetify-cli) extensions directory:
 
-| **Platform** | **Path**                                                                             |
-| ------------ | ------------------------------------------------------------------------------------ |
-| **Linux**    | `~/.config/spicetify/Extensions` or `$XDG_CONFIG_HOME/.config/spicetify/Extensions/` |
-| **MacOS**    | `~/spicetify_data/Extensions` or `$SPICETIFY_CONFIG/Extensions`                      |
-| **Windows**  | `%appdata%\spicetify\Extensions`                                                     |
+| **Platform** | **Path**                         |
+| ------------ | -------------------------------- |
+| **Linux**    | `~/.config/spicetify/Extensions` |
+| **MacOS**    | `~/.config/spicetify/Extensions` |
+| **Windows**  | `%appdata%\spicetify\Extensions` |
 
 After putting the extension file into the correct folder, run the following command to install the extension:
 
