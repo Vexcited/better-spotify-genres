@@ -11,7 +11,9 @@ const log = (level: "info" | "warn" | "error", ...args: Array<any>) => {
   console[level](prefix, ...args);
 };
 
-function initializeSpotifyGenres(): void {
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function initializeSpotifyGenres(): Promise<void> {
   // Make sure everything is loaded.
   if (!(Spicetify.CosmosAsync && Spicetify.Platform && Spicetify.URI && Spicetify.Player.data)) {
     setTimeout(initializeSpotifyGenres, 300);
@@ -545,15 +547,6 @@ function initializeSpotifyGenres(): void {
 
   let genreContainer: HTMLDivElement | null = null;
 
-  (function initMain() {
-    if (!Spicetify.Player.data) {
-      setTimeout(initMain, 1000);
-      return;
-    }
-
-    main();
-  })();
-
   async function removeGenresFromUI(): Promise<void> {
     await assignInfoContainer();
 
@@ -569,7 +562,7 @@ function initializeSpotifyGenres(): void {
 
   async function updateGenres(): Promise<void> {
     if (Spicetify.Player.data.item.metadata.is_local || Spicetify.URI.fromString(Spicetify.Player.data.item.uri).type !== "track") {
-      log("warn", "State is disabled or the current track is local, removing genres from UI...");
+      log("warn", "Current track is local, removing genres from UI...");
       removeGenresFromUI();
       return;
     }
@@ -630,16 +623,22 @@ function initializeSpotifyGenres(): void {
     makeDOMForArtistPage(artistGenres);
   }
 
-  async function main(): Promise<void> {
-    await updateGenres();
-    Spicetify.Player.addEventListener("songchange", updateGenres);
-
-    await updateArtistPage(Spicetify.Platform.History.location.pathname)
-    Spicetify.Platform.History.listen((data: { pathname: string }) => {
-      updateArtistPage(data.pathname);
-    });
+  // Wait until `Spicetify.Player.data` is available.
+  while (!Spicetify.Player.data) {
+    await wait(1000);
   }
+
+  // Initialize the genres in the player bar with event listener.
+  updateGenres();
+  Spicetify.Player.addEventListener("songchange", updateGenres);
+
+  // Initialize the genres in the artist page with page event listener.
+  updateArtistPage(Spicetify.Platform.History.location.pathname)
+  Spicetify.Platform.History.listen((data: { pathname: string }) => {
+    updateArtistPage(data.pathname);
+  });
+
+  log("info", "Initialized");
 }
 
-// Let's start !
 initializeSpotifyGenres();
