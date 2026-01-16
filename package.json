@@ -18,10 +18,8 @@
     "move:macos": "mv ./dist/spotifyGenres.js ~/.config/spicetify/Extensions"
   },
   "devDependencies": {
-    "@types/react": "^18.3.20",
     "eslint": "^8.57.1",
     "move-cli": "^2.0.0",
-    "react": "^18.3.1",
     "terser": "^5.39.0",
     "tsup": "^8.4.0",
     "typescript": "^5.8.3"
