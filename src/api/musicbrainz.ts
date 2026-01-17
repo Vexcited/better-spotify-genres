@@ -5,7 +5,7 @@ export async function fetchTagsFromMusicBrainz(
   let url = new URL("https://musicbrainz.org/ws/2/recording?fmt=json&limit=1");
   url.searchParams.set(
     "query",
-    `recording:"${trackName} AND artist:"${artistName}"`,
+    `recording:"${trackName}" AND artist:"${artistName}"`,
   );
 
   const results = await fetch(url).then((res) => res.json());
