@@ -4,17 +4,13 @@ See what genres you are listening to with this [Spicetify](https://spicetify.app
 
 ## Previews
 
-### See in player
+Genres will be displayed below the author in current track information.
 
-You can see the genres of the currently playing song.
+<img width="394" height="90" alt="image" src="https://github.com/user-attachments/assets/5c23ba9e-8e92-4b3b-9e0f-71a37501589e" />
 
-![Currently-Playing](.github/currently-playing.png)
+If available, clicking on a genre will bring the Spotify-made playlist with related tracks of this specific genre.
 
-### See in a pop-up
-
-Right click on a genre in the player bar.
-
-![Pop-up](.github/popup.png)
+<img width="1647" height="939" alt="image" src="https://github.com/user-attachments/assets/b048c96f-8929-4af2-83fe-8e84b0b3b4d3" />
 
 ## Install Manually
 
